@@ -1,5 +1,7 @@
 #load packages
 library(tidyverse)
+library(ggbeeswarm)
+
 theme_Publication <- function(base_size=14, base_family="sans") {
   library(grid)
   library(ggthemes)
@@ -47,7 +49,7 @@ scale_colour_Publication <- function(...){
 
 
 #load data
-folder <- "D:/OneDrive/Data2/ 220623 ExpMP2206_005 BRCA2 in situ quantification"
+folder <- "D:/OneDrive/Data2/220623 ExpMP2206_005 BRCA2 in situ quantification"
 intensity_values <- read_delim(file.path(folder,"220623 calibration data.txt"))
 nucleus_data <- read_csv(file.path(folder,"3Dsegmentation_output_mask.csv"))
 foci_data <- read_csv(file.path(folder,"3Dsegmentation_output_Watershed_Foci.csv"))
@@ -68,7 +70,7 @@ summarized_intensity_values <- intensity_values %>%
 
 #plot trendline
 p <- intensity_values %>%
-  ggplot(aes(x=Concentration,y=Mean))+geom_point()+  geom_smooth(method=lm)
+  ggplot(aes(x=Concentration,y=Mean))+geom_point()+  geom_smooth(method=lm) + xlab('Concentration (nM)')
 p
 
 #fit data points with linear model extract slope and intercept
@@ -76,6 +78,9 @@ m <- lm(Intensity ~Concentration , summarized_intensity_values)
 
 slope <- m$coefficients[2]
 intercept <- m$coefficients[1]
+
+#remove too small cells from dataset
+
 
 #calculate concentration of BRCA2-Halo and number of molecule per nucleus
 nucleus_data <- nucleus_data %>%
@@ -87,10 +92,15 @@ nucleus_data <- nucleus_data %>%
 hist(nucleus_data$ConcentrationM*1E9,xlab="Concentration (nM)")
 hist(nucleus_data$Number_of_molecules,main="Number of molecules/nucleus",xlab="Number of molecules/nucleus",breaks=seq(0,30000,2000))
 
-p <- ggplot(nucleus_data,aes(y=ConcentrationM*1E9))+geom_boxplot()+ scale_colour_Publication()+scale_fill_Publication()+theme_Publication(base_size=16)+ylab("Concentration/nucleus (nM)")
+nucleus_data$data <- "WT"
+p <- ggplot(nucleus_data,aes(y=ConcentrationM*1E9,x=data))+geom_boxplot()+ 
+  geom_quasirandom(width=0.3)+scale_colour_Publication()+scale_fill_Publication()+
+  theme_Publication(base_size=12)+ylab("Concentration/nucleus (nM)")
 p
 
-p <- ggplot(nucleus_data,aes(y=Number_of_molecules))+geom_boxplot()+ scale_colour_Publication()+scale_fill_Publication()+theme_Publication(base_size=16)+ylab("Number of molecules/nucleus")
+p <- ggplot(nucleus_data,aes(y=Number_of_molecules,x=data))+geom_boxplot()+  
+  geom_quasirandom(width=0.3)+scale_colour_Publication()+
+  scale_fill_Publication()+theme_Publication(base_size=16)+ylab("Number of molecules/nucleus")
 p
 ggsave(p,filename = file.path(folder,"Nmol_nucleus.png"))
 
@@ -103,7 +113,12 @@ foci_data <- foci_data %>%
 
 hist(foci_data$ConcentrationM*1E9,xlab="Concentration (nM)")
 mean(foci_data$AreaShape_Volume)
-ggplot(foci_data,aes(y=Number_of_molecules))+geom_boxplot(outlier.shape = NA)+ylim(0,75)+ scale_colour_Publication()+scale_fill_Publication()+theme_Publication(base_size=16)+ylab("Number of molecules/focus")
+
+foci_data$data <- "WT"
+ggplot(foci_data,aes(y=Number_of_molecules,x=data))+geom_boxplot(outlier.shape = NA)+ylim(0,75)+
+  geom_quasirandom(width=0.3,size=0.2,alpha=0.8)+
+  scale_colour_Publication()+scale_fill_Publication()+theme_Publication(base_size=12)+
+  ylab("Number of molecules/focus")
 hist(filter(foci_data,Number_of_molecules<200)$Number_of_molecules,breaks = seq(0,200,10),main="Number of molecules/focus",xlab="Number of molecules/focus")
 
 mean(foci_data$Number_of_molecules)
