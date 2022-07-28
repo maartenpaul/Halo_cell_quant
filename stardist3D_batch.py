@@ -1,6 +1,6 @@
 
 #@ File (label="Select folder for ",style="file") file
-
+#Fiji Jython script
 import sys
 import os
 from ij import IJ
