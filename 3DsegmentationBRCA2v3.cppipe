@@ -1,0 +1,256 @@
+CellProfiler Pipeline: http://www.cellprofiler.org
+Version:5
+DateRevision:404
+GitHash:
+ModuleCount:21
+HasImagePlaneDetails:False
+
+Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['https://github.com/CellProfiler/tutorials/tree/master/3d_monolayer']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    :
+    Filter images?:Images only
+    Select the rule criteria:and (extension does isimage) (directory doesnot containregexp "[\\\\/]\\.")
+
+Metadata:[module_num:2|svn_version:'Unknown'|variable_revision_number:6|show_window:False|notes:['The Metadata module optionally allows you to extract information describing your images (i.e, metadata) which will be stored along with your measurements. This information can be contained in the file name and/or location, or in an external file.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Extract metadata?:Yes
+    Metadata data type:Text
+    Metadata types:{}
+    Extraction method count:1
+    Metadata extraction method:Extract from file/folder names
+    Metadata source:File name
+    Regular expression to extract from file name:^C(?P<ChannelNumber>[0-9]{1,2})-(?P<ImageID>[0-9]{1,3}) *
+    Regular expression to extract from folder name:(?P<Date>[0-9]{4}_[0-9]{2}_[0-9]{2})$
+    Extract metadata from:All images
+    Select the filtering criteria:and (file does contain "")
+    Metadata file location:Elsewhere...|
+    Match file and image metadata:[]
+    Use case insensitive matching?:No
+    Metadata file name:None
+    Does cached metadata exist?:No
+
+NamesAndTypes:[module_num:3|svn_version:'Unknown'|variable_revision_number:8|show_window:False|notes:['The NamesAndTypes module allows you to assign a meaningful name to each image by which other modules will refer to it.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Assign a name to:Images matching rules
+    Select the image type:Color image
+    Name to assign these images:Cells
+    Match metadata:[{'GFP53bp1': 'ImageID', 'BRCA2': 'ImageID', 'mask': 'ImageID'}]
+    Image set matching method:Metadata
+    Set intensity range from:Image metadata
+    Assignments count:3
+    Single images count:0
+    Maximum intensity:65536.00
+    Process as 3D?:Yes
+    Relative pixel spacing in X:0.1317882
+    Relative pixel spacing in Y:0.1317882
+    Relative pixel spacing in Z:0.4564125
+    Select the rule criteria:and (metadata does ChannelNumber "2")
+    Name to assign these images:GFP53bp1
+    Name to assign these objects:Cell
+    Select the image type:Grayscale image
+    Set intensity range from:Image bit-depth
+    Maximum intensity:255.0
+    Select the rule criteria:and (metadata does ChannelNumber "1")
+    Name to assign these images:BRCA2
+    Name to assign these objects:Nucleus
+    Select the image type:Grayscale image
+    Set intensity range from:Image bit-depth
+    Maximum intensity:255.0
+    Select the rule criteria:and (metadata does ChannelNumber "0")
+    Name to assign these images:mask
+    Name to assign these objects:mask
+    Select the image type:Objects
+    Set intensity range from:Image metadata
+    Maximum intensity:255.0
+
+Groups:[module_num:4|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['The Groups module optionally allows you to split your list of images into image subsets (groups) which will be processed independently of each other. Examples of groupings include screening batches, microtiter plates, time-lapse movies, etc.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Do you want to group your images?:No
+    grouping metadata count:1
+    Metadata category:None
+
+MeasureObjectIntensity:[module_num:5|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select images to measure:BRCA2, GFP53bp1
+    Select objects to measure:mask
+
+MeasureObjectSizeShape:[module_num:6|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select object sets to measure:mask
+    Calculate the Zernike features?:No
+    Calculate the advanced features?:No
+
+FilterObjects:[module_num:7|svn_version:'Unknown'|variable_revision_number:8|show_window:True|notes:['remove too small nuclei from dataset', '']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the objects to filter:mask
+    Name the output objects:FilterObjects
+    Select the filtering mode:Measurements
+    Select the filtering method:Limits
+    Select the objects that contain the filtered objects:None
+    Select the location of the rules or classifier file:Elsewhere...|
+    Rules or classifier file name:rules.txt
+    Class number:1
+    Measurement count:1
+    Additional object count:0
+    Assign overlapping child to:Both parents
+    Select the measurement to filter by:AreaShape_Volume
+    Filter using a minimum measurement value?:Yes
+    Minimum value:10000
+    Filter using a maximum measurement value?:No
+    Maximum value:1.0
+
+MaskImage:[module_num:8|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:True]
+    Select the input image:BRCA2
+    Name the output image:BRCANuclei
+    Use objects or an image as a mask?:Objects
+    Select object for mask:FilterObjects
+    Select image for mask:None
+    Invert the mask?:No
+
+Threshold:[module_num:9|svn_version:'Unknown'|variable_revision_number:11|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:True]
+    Select the input image:BRCANuclei
+    Name the output image:ThresholdBRCA2
+    Threshold strategy:Adaptive
+    Thresholding method:Minimum Cross-Entropy
+    Threshold smoothing scale:1.6
+    Threshold correction factor:3
+    Lower and upper bounds on threshold:0.0,1.0
+    Manual threshold:0.0
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Two classes
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:8
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Sauvola
+
+DilateImage:[module_num:10|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:ThresholdBRCA2
+    Name the output image:DilateImage2
+    Structuring element:Disk,1
+
+Watershed:[module_num:11|svn_version:'Unknown'|variable_revision_number:2|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:True]
+    Select the input image:DilateImage2
+    Name the output object:Watershed_Foci
+    Generate from:Distance
+    Markers:None
+    Mask:Leave blank
+    Connectivity:1
+    Compactness:0.0
+    Footprint:3
+    Downsample:1
+    Separate watershed labels:No
+
+MeasureObjectIntensity:[module_num:12|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select images to measure:GFP53bp1, BRCA2
+    Select objects to measure:Watershed_Foci
+
+MeasureObjectSizeShape:[module_num:13|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select object sets to measure:Watershed_Foci
+    Calculate the Zernike features?:No
+    Calculate the advanced features?:No
+
+ExportToSpreadsheet:[module_num:14|svn_version:'Unknown'|variable_revision_number:13|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the column delimiter:Comma (",")
+    Add image metadata columns to your object data file?:No
+    Add image file and folder names to your object data file?:No
+    Select the measurements to export:No
+    Calculate the per-image mean values for object measurements?:No
+    Calculate the per-image median values for object measurements?:No
+    Calculate the per-image standard deviation values for object measurements?:No
+    Output file location:Elsewhere...|D:\\OneDrive\\Data2\\220623 ExpMP2206_005 BRCA2 in situ quantification
+    Create a GenePattern GCT file?:No
+    Select source of sample row name:Metadata
+    Select the image to use as the identifier:None
+    Select the metadata to use as the identifier:None
+    Export all measurement types?:Yes
+    Press button to select measurements:Image|MD5Digest_GFP53bp1,Image|MD5Digest_BRCA2,Image|Series_BRCA2,Image|Series_GFP53bp1,Image|ModuleError_11Watershed,Image|ModuleError_19DilateImage,Image|ModuleError_02Metadata,Image|ModuleError_07RescaleIntensity,Image|ModuleError_15MeasureObjectIntensity,Image|ModuleError_18Threshold,Image|ModuleError_14ResizeObjects,Image|ModuleError_17MaskImage,Image|ModuleError_16MeasureObjectSizeShape,Image|ModuleError_10DilateImage,Image|ModuleError_01Images,Image|ModuleError_20Watershed,Image|ModuleError_22MeasureObjectSizeShape,Image|ModuleError_06MedianFilter,Image|ModuleError_08Threshold,Image|ModuleError_09RemoveHoles,Image|ModuleError_21MeasureObjectIntensity,Image|ModuleError_03NamesAndTypes,Image|ModuleError_12FillObjects,Image|ModuleError_04Groups,Image|ModuleError_13FilterObjects,Image|ModuleError_05Resize,Image|ExecutionTime_08Threshold,Image|ExecutionTime_19DilateImage,Image|ExecutionTime_20Watershed,Image|ExecutionTime_11Watershed,Image|ExecutionTime_09RemoveHoles,Image|ExecutionTime_21MeasureObjectIntensity,Image|ExecutionTime_07RescaleIntensity,Image|ExecutionTime_16MeasureObjectSizeShape,Image|ExecutionTime_17MaskImage,Image|ExecutionTime_02Metadata,Image|ExecutionTime_05Resize,Image|ExecutionTime_13FilterObjects,Image|ExecutionTime_14ResizeObjects,Image|ExecutionTime_18Threshold,Image|ExecutionTime_12FillObjects,Image|ExecutionTime_04Groups,Image|ExecutionTime_15MeasureObjectIntensity,Image|ExecutionTime_01Images,Image|ExecutionTime_22MeasureObjectSizeShape,Image|ExecutionTime_06MedianFilter,Image|ExecutionTime_10DilateImage,Image|ExecutionTime_03NamesAndTypes,Image|FileName_BRCA2,Image|FileName_GFP53bp1,Image|Count_FillObjects,Image|Count_Watershed,Image|Count_Watershed_Foci,Image|Count_FilterObjects,Image|Count_ResizeObjects,Image|Group_Number,Image|Group_Index,Image|URL_GFP53bp1,Image|URL_BRCA2,Image|Threshold_FinalThreshold_Threshold53bp1,Image|Threshold_FinalThreshold_DAPI_threshold,Image|Threshold_SumOfEntropies_Threshold53bp1,Image|Threshold_SumOfEntropies_DAPI_threshold,Image|Threshold_OrigThreshold_DAPI_threshold,Image|Threshold_OrigThreshold_Threshold53bp1,Image|Threshold_WeightedVariance_DAPI_threshold,Image|Threshold_WeightedVariance_Threshold53bp1,Image|Threshold_GuideThreshold_Threshold53bp1,Image|PathName_BRCA2,Image|PathName_GFP53bp1,Image|Scaling_BRCA2,Image|Scaling_GFP53bp1,Image|Metadata_Frame,Image|Metadata_Series,Image|Metadata_ImageID,Image|Metadata_ChannelNumber,Image|Metadata_FileLocation,Image|Height_BRCA2,Image|Height_GFP53bp1,Image|Width_GFP53bp1,Image|Width_BRCA2,Image|Frame_BRCA2,Image|Frame_GFP53bp1,ResizeObjects|Intensity_MeanIntensityEdge_BRCA2,ResizeObjects|Intensity_MeanIntensityEdge_GFP53bp1,ResizeObjects|Intensity_MADIntensity_BRCA2,ResizeObjects|Intensity_MinIntensity_GFP53bp1,ResizeObjects|Intensity_MinIntensity_BRCA2,ResizeObjects|Intensity_MeanIntensity_BRCA2,ResizeObjects|Intensity_StdIntensityEdge_BRCA2,ResizeObjects|Intensity_StdIntensityEdge_GFP53bp1,ResizeObjects|Intensity_IntegratedIntensity_GFP53bp1,ResizeObjects|Intensity_IntegratedIntensity_BRCA2,ResizeObjects|Intensity_IntegratedIntensityEdge_BRCA2,ResizeObjects|Intensity_IntegratedIntensityEdge_GFP53bp1,ResizeObjects|Intensity_StdIntensity_BRCA2,ResizeObjects|Intensity_UpperQuartileIntensity_BRCA2,ResizeObjects|Intensity_UpperQuartileIntensity_GFP53bp1,ResizeObjects|Intensity_MaxIntensityEdge_BRCA2,ResizeObjects|Intensity_LowerQuartileIntensity_GFP53bp1,ResizeObjects|Intensity_LowerQuartileIntensity_BRCA2,ResizeObjects|Intensity_MedianIntensity_BRCA2,ResizeObjects|Intensity_MaxIntensity_GFP53bp1,ResizeObjects|Intensity_MaxIntensity_BRCA2,ResizeObjects|Intensity_MassDisplacement_GFP53bp1,ResizeObjects|Intensity_MassDisplacement_BRCA2,ResizeObjects|Intensity_MinIntensityEdge_BRCA2,ResizeObjects|Intensity_MinIntensityEdge_GFP53bp1,ResizeObjects|Location_MaxIntensity_Z_BRCA2,ResizeObjects|Location_MaxIntensity_Y_BRCA2,ResizeObjects|Location_MaxIntensity_X_BRCA2,ResizeObjects|Location_CenterMassIntensity_X_BRCA2,ResizeObjects|Location_CenterMassIntensity_Z_BRCA2,ResizeObjects|Location_CenterMassIntensity_Z_GFP53bp1,ResizeObjects|Location_CenterMassIntensity_Y_GFP53bp1,ResizeObjects|Location_CenterMassIntensity_Y_BRCA2,ResizeObjects|Location_Center_Z,ResizeObjects|Location_Center_X,ResizeObjects|Location_Center_Y,ResizeObjects|AreaShape_BoundingBoxMinimum_X,ResizeObjects|AreaShape_BoundingBoxMinimum_Y,ResizeObjects|AreaShape_BoundingBoxMinimum_Z,ResizeObjects|AreaShape_EulerNumber,ResizeObjects|AreaShape_Center_Z,ResizeObjects|AreaShape_Center_X,ResizeObjects|AreaShape_Center_Y,ResizeObjects|AreaShape_MinorAxisLength,ResizeObjects|AreaShape_BoundingBoxVolume,ResizeObjects|AreaShape_EquivalentDiameter,ResizeObjects|AreaShape_SurfaceArea,ResizeObjects|AreaShape_Volume,ResizeObjects|AreaShape_BoundingBoxMaximum_Y,ResizeObjects|AreaShape_BoundingBoxMaximum_Z,ResizeObjects|AreaShape_BoundingBoxMaximum_X,ResizeObjects|AreaShape_MajorAxisLength,ResizeObjects|AreaShape_Extent,ResizeObjects|Number_Object_Number,ResizeObjects|Parent_Watershed,Watershed_Foci|Location_CenterMassIntensity_Y_BRCA2,Watershed_Foci|Location_CenterMassIntensity_Y_GFP53bp1,Watershed_Foci|Location_CenterMassIntensity_X_GFP53bp1,Watershed_Foci|Location_CenterMassIntensity_X_BRCA2,Watershed_Foci|Location_CenterMassIntensity_Z_BRCA2,Watershed_Foci|Location_CenterMassIntensity_Z_GFP53bp1,Watershed_Foci|Location_MaxIntensity_Y_GFP53bp1,Watershed_Foci|Location_MaxIntensity_Y_BRCA2,Watershed_Foci|Location_MaxIntensity_X_BRCA2,Watershed_Foci|Location_MaxIntensity_X_GFP53bp1,Watershed_Foci|Location_MaxIntensity_Z_GFP53bp1,Watershed_Foci|Location_MaxIntensity_Z_BRCA2,Watershed_Foci|Location_Center_Z,Watershed_Foci|Location_Center_Y,Watershed_Foci|Location_Center_X,Watershed_Foci|Intensity_MedianIntensity_GFP53bp1,Watershed_Foci|Intensity_MedianIntensity_BRCA2,Watershed_Foci|Intensity_MinIntensity_BRCA2,Watershed_Foci|Intensity_MinIntensity_GFP53bp1,Watershed_Foci|Intensity_StdIntensityEdge_GFP53bp1,Watershed_Foci|Intensity_StdIntensityEdge_BRCA2,Watershed_Foci|Intensity_UpperQuartileIntensity_BRCA2,Watershed_Foci|Intensity_UpperQuartileIntensity_GFP53bp1,Watershed_Foci|Intensity_IntegratedIntensity_GFP53bp1,Watershed_Foci|Intensity_IntegratedIntensity_BRCA2,Watershed_Foci|Intensity_StdIntensity_GFP53bp1,Watershed_Foci|Intensity_StdIntensity_BRCA2,Watershed_Foci|Intensity_IntegratedIntensityEdge_BRCA2,Watershed_Foci|Intensity_IntegratedIntensityEdge_GFP53bp1,Watershed_Foci|Intensity_MeanIntensity_BRCA2,Watershed_Foci|Intensity_MeanIntensity_GFP53bp1,Watershed_Foci|Intensity_MADIntensity_BRCA2,Watershed_Foci|Intensity_MADIntensity_GFP53bp1,Watershed_Foci|Intensity_MeanIntensityEdge_BRCA2,Watershed_Foci|Intensity_MeanIntensityEdge_GFP53bp1,Watershed_Foci|Intensity_MaxIntensityEdge_BRCA2,Watershed_Foci|Intensity_MaxIntensityEdge_GFP53bp1,Watershed_Foci|Intensity_LowerQuartileIntensity_BRCA2,Watershed_Foci|Intensity_LowerQuartileIntensity_GFP53bp1,Watershed_Foci|Intensity_MaxIntensity_GFP53bp1,Watershed_Foci|Intensity_MaxIntensity_BRCA2,Watershed_Foci|Intensity_MinIntensityEdge_GFP53bp1,Watershed_Foci|Intensity_MinIntensityEdge_BRCA2,Watershed_Foci|Intensity_MassDisplacement_BRCA2,Watershed_Foci|Intensity_MassDisplacement_GFP53bp1,Watershed_Foci|AreaShape_EulerNumber,Watershed_Foci|AreaShape_Center_Y,Watershed_Foci|AreaShape_Center_Z,Watershed_Foci|AreaShape_Center_X,Watershed_Foci|AreaShape_BoundingBoxMinimum_Y,Watershed_Foci|AreaShape_BoundingBoxMinimum_X,Watershed_Foci|AreaShape_BoundingBoxMinimum_Z,Watershed_Foci|AreaShape_EquivalentDiameter,Watershed_Foci|AreaShape_MinorAxisLength,Watershed_Foci|AreaShape_BoundingBoxMaximum_Z,Watershed_Foci|AreaShape_BoundingBoxMaximum_Y,Watershed_Foci|AreaShape_BoundingBoxMaximum_X,Watershed_Foci|AreaShape_Extent,Watershed_Foci|AreaShape_MajorAxisLength,Watershed_Foci|AreaShape_SurfaceArea,Watershed_Foci|AreaShape_Volume,Watershed_Foci|AreaShape_BoundingBoxVolume,Watershed_Foci|Number_Object_Number,Experiment|Modification_Timestamp,Experiment|Run_Timestamp,Experiment|Pipeline_Pipeline,Experiment|CellProfiler_Version
+    Representation of Nan/Inf:NaN
+    Add a prefix to file names?:Yes
+    Filename prefix:3Dsegmentation_output_
+    Overwrite existing files without warning?:Yes
+    Data to export:Do not use
+    Combine these object measurements with those of the previous object?:No
+    File name:DATA.csv
+    Use the object name for the file name?:Yes
+
+OverlayObjects:[module_num:15|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Input:BRCA2
+    Name the output image:OverlayObjects
+    Objects:mask
+    Opacity:0.3
+
+OverlayObjects:[module_num:16|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Input:BRCA2
+    Name the output image:OverlayFoci
+    Objects:Watershed_Foci
+    Opacity:0.3
+
+OverlayOutlines:[module_num:17|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Display outlines on a blank image?:No
+    Select image on which to display outlines:BRCA2
+    Name the output image:OverlayFoci
+    Outline display mode:Color
+    Select method to determine brightness of outlines:Max of image
+    How to outline:Inner
+    Select outline color:Red
+    Select objects to display:Watershed_Foci
+
+ConvertObjectsToImage:[module_num:18|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input objects:mask
+    Name the output image:CellImage
+    Select the color format:uint16
+    Select the colormap:Default
+
+SaveImages:[module_num:19|svn_version:'Unknown'|variable_revision_number:15|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:OverlayObjects
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:BRCA2
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:Yes
+    Text to append to the image name:overlay
+    Saved file format:tiff
+    Output file location:Same folder as image|
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:No
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...|
+    How to save the series:T (Time)
+
+SaveImages:[module_num:20|svn_version:'Unknown'|variable_revision_number:15|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:OverlayFoci
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:BRCA2
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:Yes
+    Text to append to the image name:overlayFoci
+    Saved file format:tiff
+    Output file location:Same folder as image|
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:No
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...|
+    How to save the series:T (Time)
+
+SaveImages:[module_num:21|svn_version:'Unknown'|variable_revision_number:15|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the type of image to save:Image
+    Select the image to save:CellImage
+    Select method for constructing file names:From image filename
+    Select image name for file prefix:BRCA2
+    Enter single file name:OrigBlue
+    Number of digits:4
+    Append a suffix to the image file name?:Yes
+    Text to append to the image name:objects
+    Saved file format:tiff
+    Output file location:Same folder as image|
+    Image bit depth:8-bit integer
+    Overwrite existing files without warning?:Yes
+    When to save:Every cycle
+    Record the file and path information to the saved image?:No
+    Create subfolders in the output folder?:No
+    Base image folder:Elsewhere...|
+    How to save the series:T (Time)
